@@ -1,0 +1,4 @@
+<launch>
+  <include file="$(find usb_cam)/launch/usb_cam-settings.launch"/>
+  <node name="vision_tracking" pkg="basic_opencv" type="vision_tracking"/>
+</launch>
