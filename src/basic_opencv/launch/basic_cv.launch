@@ -1,0 +1,4 @@
+<launch>
+  <include file="$(find usb_cam)/launch/usb_cam-settings.launch"/>
+  <node name="basic_cv" pkg="basic_opencv" type="basic_cv"/>
+</launch>
