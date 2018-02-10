@@ -18,15 +18,25 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
   try
   {
-
     src = cv_bridge::toCvShare(msg, "bgr8")->image;
 
-   /*
-     * INSERT CODE HERE
-    */
+    cvtColor(src, gray, CV_BGR2GRAY);
+
+    blur( gray, dst, Size(3,3) );
+
+    Canny(dst, edges, 50, 200, 3);
+
+    cvtColor(edges, cdst, CV_GRAY2BGR);
+
+    HoughLinesP(edges, lines, 1, CV_PI/180, 80, 30, 10 );
+    for( size_t i = 0; i < lines.size(); i++ )
+    {
+        line( cdst, Point(lines[i][0], lines[i][1]),
+            Point(lines[i][2], lines[i][3]), Scalar(0,0,255), 3, 8 );
+    }
 
     sensor_msgs::ImagePtr msg;
-    msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", src).toImageMsg();
+    msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", cdst).toImageMsg();
 
     user_image_pub.publish(msg);
   }

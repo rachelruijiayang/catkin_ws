@@ -32,9 +32,28 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg)
   {
     src = cv_bridge::toCvShare(msg, "bgr8")->image;
 
-   /*
-     * INSERT CODE HERE
-    */
+    //Convert the image to HSV
+    cv::cvtColor(src, hsv, CV_BGR2HSV);
+
+    //Define the range of blue pixels
+    cv::Scalar lower_thresh(hue_lower, sat_lower, value_lower);
+    cv::Scalar upper_thresh(hue_upper, sat_upper, value_upper);
+
+    //Create a mask with only blue pixels
+    cv::inRange(hsv, lower_thresh, upper_thresh, mask);
+
+    //Calculate moments of mask
+    moments = cv::moments(mask, true);
+
+    //Calculate center of mass using moments
+    center_of_mass.x = moments.m10 / moments.m00;
+    center_of_mass.y = moments.m01 / moments.m00;
+
+    //Conert the image back to BGR
+    cv::cvtColor(mask, dst, CV_GRAY2BGR);
+
+    //Plot the center of mass
+    cv::circle(dst, center_of_mass, 5, cv::Scalar(0,0,255), -1);
 
     sensor_msgs::ImagePtr msg;
     msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", dst).toImageMsg();
